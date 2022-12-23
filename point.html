@@ -35,15 +35,12 @@
 			/* Initial Map */
 			var map = L.map("map").setView([-7.9, 110.45], 10);
 
-			/* Tile Basemap */
-			var basemap = L.tileLayer(
-				"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-				{
-					attribution:
-						'<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="https://www.unsorry.net" target="_blank">unsorry@2022</a>',
-				}
-			);
-			basemap.addTo(map);
+			/* Tile Basemap */ //(note: pilihan basemap diakses pada https://leaflet-extras.github.io/leaflet-providers/preview/)
+			var basemap1 = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        		attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="SITEMAN" target="_blank">SITEMAN</a>' //menambahkan nama//
+   			 });
+
+    		basemap1.addTo(map);
 
 			var redMarker = L.AwesomeMarkers.icon({
 				icon: 'plus',
