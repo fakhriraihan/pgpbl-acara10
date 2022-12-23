@@ -4,9 +4,9 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>LeafletJS GeoJSON Point</title>
+		<title>SITEMAN</title>
 		<link
-			href="https://unsorry.net/assets-date/images/favicon.png"
+			href="https://www.freeiconspng.com/thumbs/hospital-icon/ambulance-cross-hospital-icon-11.png"
 			rel="shortcut icon"
 			type="image/png"
 		/>
@@ -61,8 +61,7 @@
 				onEachFeature: function (feature, layer) {
 					var popupContent = "Nama: " + feature.properties.Nama + "<br>" +
 						"Kategori: " + feature.properties.Kategori  + "<br>" +
-						"Alamat: " + feature.properties.Kecamatan + "," + feature.properties.Desa + "<br>" +
-						"<img src='Nonspatial/Foto/" + feature.properties.foto + "' width='150'>";
+						"Alamat: " + feature.properties.Kecamatan + "," + feature.properties.Desa;
 					layer.on({
 						click: function (e) {
 							point.bindPopup(popupContent);
