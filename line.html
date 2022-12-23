@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="author" content="Fakhri Raihan">
+    <meta name="description" content="leaflet basic">
+
+    <!-- Judul pada tab browser -->
+    <title>LeafletJS - SITEMAN</title>
+
+    <!-- Leaflet CSS Library -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css">
+
+    <!-- Tab browser icon -->
+    <link rel="icon" type="image/x-icon" href="https://www.freeiconspng.com/thumbs/hospital-icon/ambulance-cross-hospital-icon-11.png">
+
+    <!--Geolocation CSS Library for plugin-->
+    <link rel="stylesheet" href="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.css">
+
+    <!--Font Awesome CSS Library-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css">
+
+    <!--Search CSS Library-->
+    <link rel="stylesheet" href="assets/plugins/leaflet-search/src/leaflet-search.css">
+
+    <!--Leaflet Mouse Position CSS Library-->
+    <link rel="stylesheet" href="assets/plugins/Leaflet-mouseposition/src/L.Control.MousePosition.css">
+
+    <!--Leaflet Measure CSS Library-->
+    <link rel="stylesheet" href="assets/plugins/leaflet-measure/leaflet-measure.css">
+
+    <!--Leaflet EasyPrint CSS Library-->
+    <link rel="stylesheet" href="assets/plugins/leaflet-easyPrint/easyPrint.css">
+
+    <style>
+        /* Background pada Judul */
+        *.info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: rgb(28, 27, 27);
+            background: rgba(25, 24, 24, 0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            text-align: center;
+        }
+        .info h2 {
+            margin: 7px 5px 5px;
+            color: rgb(255, 255, 255);
+        }
+        .info h4 {
+            color: rgb(255, 255, 255);
+        }
+
+        /*Tampilan peta fullscreen*/
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <!--Leaflet Javascript Library-->
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+
+    <!--untuk menampilkan file dalam format geojson-->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <!--Geolocation Javascript Library-->
+    <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.min.js"></script>
+
+    <!--Search JS Library-->
+    <script src="assets/plugins/leaflet-search/src/leaflet-search.js"></script>
+
+    <!--Leaflet Mouse Position JS Library-->
+    <script src="assets/plugins/Leaflet-mouseposition/src/L.Control.MousePosition.js"></script>
+
+    <!--Leaflet Measure JS Library-->
+    <script src="assets/plugins/leaflet-measure/leaflet-measure.js"></script>
+
+    <!--Leaflet EasyPrint JS Library-->
+    <script src="assets/plugins/leaflet-easyPrint/leaflet.easyPrint.js"></script>
+
+    <div id="map"></div>
+</body>
+
+<script>
+    /* Initial Map */
+    var map = L.map('map').setView([-7.699566915423707, 110.40324507859499],11); //lat, long, zoom
+
+    /* Tile Basemap */ //(note: pilihan basemap diakses pada https://leaflet-extras.github.io/leaflet-providers/preview/)
+    var basemap1 = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="SITEMAN" target="_blank">SITEMAN</a>' //menambahkan nama//
+    });
+
+    basemap1.addTo(map);
+
+
+    /* GeoJSON Polyline Style 01 – Data Nominal*/
+    //pembuatan pane dan z.index digunakan untuk menyusun ordering layer agar tidak saling menutupi
+    $.getJSON("data/Jalan_Sleman.geojson", function (data) {
+        Jalan_Sleman.addData(data);
+        map.addLayer(Jalan_Sleman);
+        map.fitBounds(Jalan_Sleman.getBounds());
+    });
+    map.createPane("pane_Jalan_Sleman");
+    map.getPane("pane_Jalan_Sleman").style.zIndex = 405;
+
+    var Jalan_Sleman = L.geoJson(null, {
+        style: function (feature) {
+            if (feature.properties.FUNGSI === "Jalan Arteri" ) {
+                return {
+                    color: "#9d2224", //Warna garis
+                    dashArray: '',
+                    weight: 4, //Tebal garis
+                    opacity: 1, //Transparansi garis
+                }
+            }
+            else if (feature.properties.FUNGSI === "Jalan Kolektor" ) {
+                return {
+                    color: "#9d2224", //Warna garis
+                    dashArray: '',
+                    weight: 2.5, //Tebal garis
+                    opacity: 1, //Transparansi garis
+                }
+            }
+            else if (feature.properties.FUNGSI === "Jalan Lokal" ) {
+                return {
+                    color: "#9d2224", //Warna garis
+                    dashArray: '',
+                    weight: 1, //Tebal garis
+                    opacity: 1, //Transparansi garis
+                }
+            }
+            else if (feature.properties.FUNGSI === "Rel Kereta" ) {
+                return {
+                    color: "#000000", //Warna garis
+                    dashArray: '5',
+                    weight: 2, //Tebal garis
+                    opacity: 1, //Transparansi garis
+                }
+            }
+        },
+        onEachFeature: function (feature, layer) {
+            var content = "Jenis: " + feature.properties.FUNGSI + "<br>" +
+            "Nama: " + feature.properties.NAMA + "<br>" +
+            "Kewenangan: " + feature.properties.KEWENANGAN;
+
+            var contentTable = "<table>" +
+                "<tr><th>Jenis</th><td>" + feature.properties.FUNGSI + "</td></tr>" +
+                "<tr><th>Nama</th><td>" + feature.properties.NAMA + "</td></tr>" +
+                "<tr><th>Kewenangan</th><td>" + feature.properties.KEWENANGAN + "</td></tr>" +
+                "</table>";
+
+                layer.on({
+                    click: function (e) { //Fungsi ketika obyek diklik
+                        Jalan_Sleman.bindPopup(contentTable);
+                        },
+                        mouseover: function (e) { //Fungsi mouse berada di atas obyek untuk highlight
+                            var layer = e.target; //variabel layer
+                            layer.setStyle({ //Highlight style
+                                weight: 2,  //Tebal garis
+                                color: "#00FFFF", //Warna garis
+                                  opacity: 1, //Transparansi garis
+                            });
+                          Jalan_Sleman.bindTooltip("Jalan " + feature.properties.NAMA, {sticky: true});
+                        },
+                        mouseout: function (e) { //Fungsi mouse keluar dari obyek
+                            Jalan_Sleman.resetStyle(e.target); //Mengembalikan style garis ke style awal
+                            map.closePopup(); //Menutup popup
+                        }
+                    });
+                },
+                // pane: "pane_Jalan_Sleman"
+            });
+    
+
+    </script>
+</html>

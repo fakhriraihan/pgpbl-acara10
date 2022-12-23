@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="author" content="Fakhri Raihan">
+    <meta name="description" content="leaflet basic">
+
+    <!-- Judul pada tab browser -->
+    <title>LeafletJS - SITEMAN</title>
+
+    <!-- Leaflet CSS Library -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css">
+
+    <!-- Tab browser icon -->
+    <link rel="icon" type="image/x-icon" href="https://www.freeiconspng.com/thumbs/hospital-icon/ambulance-cross-hospital-icon-11.png">
+
+    <!--Geolocation CSS Library for plugin-->
+    <link rel="stylesheet" href="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.css">
+
+    <!--Font Awesome CSS Library-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css">
+
+    <!--Search CSS Library-->
+    <link rel="stylesheet" href="assets/plugins/leaflet-search/src/leaflet-search.css">
+
+    <!--Leaflet Mouse Position CSS Library-->
+    <link rel="stylesheet" href="assets/plugins/Leaflet-mouseposition/src/L.Control.MousePosition.css">
+
+    <!--Leaflet Measure CSS Library-->
+    <link rel="stylesheet" href="assets/plugins/leaflet-measure/leaflet-measure.css">
+
+    <!--Leaflet EasyPrint CSS Library-->
+    <link rel="stylesheet" href="assets/plugins/leaflet-easyPrint/easyPrint.css">
+
+    <style>
+        /* Background pada Judul */
+        *.info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: rgb(28, 27, 27);
+            background: rgba(25, 24, 24, 0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            text-align: center;
+        }
+        .info h2 {
+            margin: 7px 5px 5px;
+            color: rgb(255, 255, 255);
+        }
+        .info h4 {
+            color: rgb(255, 255, 255);
+        }
+
+        /*Tampilan peta fullscreen*/
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <!--Leaflet Javascript Library-->
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+
+    <!--untuk menampilkan file dalam format geojson-->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <!--Geolocation Javascript Library-->
+    <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.min.js"></script>
+
+    <!--Search JS Library-->
+    <script src="assets/plugins/leaflet-search/src/leaflet-search.js"></script>
+
+    <!--Leaflet Mouse Position JS Library-->
+    <script src="assets/plugins/Leaflet-mouseposition/src/L.Control.MousePosition.js"></script>
+
+    <!--Leaflet Measure JS Library-->
+    <script src="assets/plugins/leaflet-measure/leaflet-measure.js"></script>
+
+    <!--Leaflet EasyPrint JS Library-->
+    <script src="assets/plugins/leaflet-easyPrint/leaflet.easyPrint.js"></script>
+
+    <div id="map"></div>
+</body>
+
+<script>
+    /* Initial Map */
+    var map = L.map('map').setView([-7.699566915423707, 110.40324507859499],11); //lat, long, zoom
+
+    /* Tile Basemap */ //(note: pilihan basemap diakses pada https://leaflet-extras.github.io/leaflet-providers/preview/)
+    var basemap1 = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="SITEMAN" target="_blank">SITEMAN</a>' //menambahkan nama//
+    });
+
+    basemap1.addTo(map);
+    
+    /* memanggil data file geojson polygon 01 – Data Interval/Rasio */
+    $.getJSON("data/BatasAdmin_Sleman.geojson", function (data) {
+        BatasAdmin_Sleman.addData(data);
+        map.addLayer(BatasAdmin_Sleman);
+        map.fitBounds(BatasAdmin_Sleman.getBounds());
+    });
+
+    /* GeoJSON Polygon Style 01*/
+    var BatasAdmin_Sleman = L.geoJson(null, {
+        style: function (feature) {
+            return {
+                opacity: 1,
+                color: 'black',
+                weight: 1,
+                dashArray: '3',
+                fillOpacity: 0.7, 
+                fillColor: '#1f78b4'
+            }
+        },
+        
+        onEachFeature: function (feature, layer) {
+            var content = "Desa: " + feature.properties.Desa + "<br>" +
+                "Kecamatan: " + feature.properties.Kecamatan + "<br>" +
+                "Kabupaten: " + feature.properties.Kabupaten;
+
+            var contentTable = "<table>" +
+                "<tr><th>Desa</th><td>" + feature.properties.Desa + "</td></tr>" +
+                "<tr><th>Kecamatan</th><td>" + feature.properties.Kecamatan + "</td></tr>" +
+                "<tr><th>Kabupaten</th><td>" + feature.properties.Kabupaten + "</td></tr>" +
+                "</table>";
+
+            layer.on({
+                click: function (e) { //Fungsi ketika obyek diklik
+                    BatasAdmin_Sleman.bindPopup(contentTable);
+                },
+                mouseover: function (e) { //Fungsi mouse berada di atas obyek untuk highlight
+                    var layer = e.target; //variabel layer
+                    layer.setStyle({ //Highlight style
+                        color: "grey", //Warna garis tepi polygon
+                        weight: 0.2, //Tebal garis tepi polygon
+                        opacity: 1, //Transparansi garis tepi polygon
+                        fillColor: "cyan", //Warna tengah polygon
+                        fillOpacity: 0.7 //Transparansi polygon
+                    });
+                    BatasAdmin_Sleman.bindTooltip("Desa " + feature.properties.Desa, {sticky: true});
+                },
+                mouseout: function (e) { //Fungsi mouse keluar dari obyek
+                    BatasAdmin_Sleman.resetStyle(e.target); //Mengembalikan style garis ke style awal
+                    map.closePopup(); //Menutup popup
+                }
+            });
+        }
+    });
+
+    </script>
+</html>
